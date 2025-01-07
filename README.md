@@ -1,2 +1,2 @@
-# Lateral-spreading-for-MS
+# Lateral-spreading-for-SM
 Lateral speeding for Italian seismic microzonation
