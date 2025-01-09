@@ -1,0 +1,47 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Lateral spreading SM
+qgisMinimumVersion=3.34
+description=Lateral spreading for seismic microzonation
+version=0.1
+author=Giuseppe Cosentino and Francesco Pennica c/o Consiglio Nazionale delle Ricerche
+email=giuseppe.cosentino@cnr.it; Francesco.Pennica@cnr.it
+
+about=Lateral spreading is a term used in geotechnical and earthquake engineering. It refers to the horizontal movement of soil or rock, often occurring during an earthquake. This phenomenon typically happens in areas with loose, saturated soils, and it can cause significant ground deformation, impacting structures, pipelines, and other infrastructure. Lateral spreading usually occurs when: - There is a liquefaction of loose, water-saturated soils. - The ground surface slopes gently. - There are nearby free faces, like riverbanks or sea cliffs, providing an unconfined direction for the soil to move. This type of ground failure is especially dangerous because it can lead to the collapse of buildings, bridges, and other critical infrastructure.
+
+tracker=http://bugs
+repository=http://repo
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=yes
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=seismic microzonation,  geology,  geoprocessing
+
+homepage=http://homepage
+category=Geoprocessing
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+Category of the plugin: Raster, Vector, Database or Web
+# category=
+
+# If the plugin can run on QGIS Server.
+server=False
+
