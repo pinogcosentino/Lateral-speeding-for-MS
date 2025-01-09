@@ -4,9 +4,11 @@ Lateral spreading usually occurs when:
 - There is a liquefaction of loose, water-saturated soils.
 - The ground surface slopes gently.
 - There are nearby free faces, like riverbanks or sea cliffs, providing an unconfined direction for the soil to move.
+
 This type of ground failure is especially dangerous because it can lead to the collapse of buildings, bridges, and other critical infrastructure.
 Input parameters: Polygon Layer; Liquefaction Index (IL); Digital Terrain Model.
 Output:Slope %; Low Susceptibility Zones; Respect Zones; Susceptibility Zones.
+
 Examples:
 The plugin identifies Zones subject to lateral spreading:
 - Low Susceptibility Zones (Z0): 2 < Slope% ≤ 5 and 0 < IL ≤ 2;
