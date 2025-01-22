@@ -63,7 +63,7 @@ class SeismicMicrozonationProvider(QgsProcessingProvider):
         string should be a unique, short, character only string, eg "qgis" or
         "gdal". This string should not be localised.
         """
-        return 'Seismic Microzonation'
+        return 'Lateral Spreading'
 
     def name(self):
         """
@@ -72,7 +72,7 @@ class SeismicMicrozonationProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('Seismic Microzonation')
+        return self.tr('Lateral Spreading')
 
     def icon(self):
         """

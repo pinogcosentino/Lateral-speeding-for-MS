@@ -1,16 +1,12 @@
-# This file contains metadata for your plugin.
-
-# This file should be included when you package your plugin.# Mandatory items:
-
 [general]
-name=Lateral spreading SM
+name=Lateral spreading
 qgisMinimumVersion=3.34
 description=Lateral spreading for seismic microzonation
 version=0.1
-author=Giuseppe Cosentino and Francesco Pennica c/o Consiglio Nazionale delle Ricerche
-email=giuseppe.cosentino@cnr.it; Francesco.Pennica@cnr.it
+author=Giuseppe Cosentino (Pino)
+email=giuseppe.cosentino@cnr.it
 
-about=Lateral spreading is a term used in geotechnical and earthquake engineering. It refers to the horizontal movement of soil or rock, often occurring during an earthquake. This phenomenon typically happens in areas with loose, saturated soils, and it can cause significant ground deformation, impacting structures, pipelines, and other infrastructure. Lateral spreading usually occurs when: - There is a liquefaction of loose, water-saturated soils. - The ground surface slopes gently. - There are nearby free faces, like riverbanks or sea cliffs, providing an unconfined direction for the soil to move. This type of ground failure is especially dangerous because it can lead to the collapse of buildings, bridges, and other critical infrastructure.
+about=Lateral spreading is a geotechnical phenomenon that occurs when the ground moves laterally under the influence of external forces, such as an earthquake. This phenomenon is also influenced by the morphological slope of the terrain. It primarily occurs in water-saturated sandy soils that, when subjected to stress, lose their cohesion and behave like a fluid; a phenomenon known as liquefaction. As a result, the ground moves laterally, creating potential risks for buildings and infrastructure.
 
 tracker=https://github.com/pinogcosentino/Lateral-spreading-for-seismic-microzonation/pulls
 repository=https://github.com/pinogcosentino/Lateral-spreading-for-seismic-microzonation
@@ -23,7 +19,7 @@ hasProcessingProvider=yes
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=seismic microzonation,  geology,  geoprocessing
+tags=geology, seismic microzonation,  geoprocessing
 
 homepage=http://homepage
 category=Geoprocessing

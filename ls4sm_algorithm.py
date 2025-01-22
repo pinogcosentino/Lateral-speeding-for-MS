@@ -33,47 +33,51 @@ __revision__ = '$Format:%H$'
 from qgis.core import QgsProcessing
 from qgis.core import QgsProcessingAlgorithm
 from qgis.core import QgsProcessingMultiStepFeedback
+from qgis.core import QgsProcessingParameterRasterLayer
 from qgis.core import QgsProcessingParameterVectorLayer
 from qgis.core import QgsProcessingParameterField
-from qgis.core import QgsProcessingParameterRasterLayer
-from qgis.core import QgsProcessingParameterRasterDestination
 from qgis.core import QgsProcessingParameterFeatureSink
-from qgis.core import QgsCoordinateReferenceSystem
 import processing
 
 
 class SeismicMicrozonationAlgorithm(QgsProcessingAlgorithm):
 
     def initAlgorithm(self, config=None):
-        self.addParameter(QgsProcessingParameterVectorLayer('polygon_layer', 'Polygon Layer', types=[QgsProcessing.TypeVectorPolygon], defaultValue=None))
-        self.addParameter(QgsProcessingParameterField('liquefaction_index_il', 'Liquefaction Index (IL)', type=QgsProcessingParameterField.Numeric, parentLayerParameterName='polygon_layer', allowMultiple=False, defaultValue=None))
-        self.addParameter(QgsProcessingParameterRasterLayer('digital_terrain_model', 'Digital Terrain Model', defaultValue=None))
-        self.addParameter(QgsProcessingParameterRasterDestination('Slope', 'Slope %', createByDefault=True, defaultValue=''))
-        self.addParameter(QgsProcessingParameterFeatureSink('RespectZonesZrLsSlope15AndIl0', 'Respect Zones (ZR LS) Slope% > 15 and IL> 0', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('RespectZonesZrLs2Slope5AndIl15', 'Respect Zones (ZR LS) 2 < Slope% ≤ 5 and IL >15', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('SusceptibilityZonesZsLs2Slope5And2Il15', 'Susceptibility Zones (ZS  LS) 2 < Slope% ≤ 5 and 2< IL ≤ 15', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('LowSusceptibilityZones', 'Low Susceptibility Zones', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('SusceptibilityLateralSpreadingZonesZsLs5Slope15And0Il2', 'Susceptibility Lateral Spreading Zones - ZS  LS (5 < Slope% ≤ 15 and 0 < IL ≤ 2)', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('RespectZonesZrLs2Slope15And2Il5', 'Respect  Zones (ZR LS) 2 < Slope% ≤ 15 and 2 < IL≤ 5', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('RespectZones', 'Respect Zones', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('SusceptibilityZones', 'Susceptibility Zones', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue='TEMPORARY_OUTPUT'))
-        self.addParameter(QgsProcessingParameterFeatureSink('LiquefactionIndexPonit', 'Liquefaction index ponit', type=QgsProcessing.TypeVectorPoint, createByDefault=True, supportsAppend=True, defaultValue=None))
+        self.addParameter(QgsProcessingParameterRasterLayer('digital_terrain_model_dtm', 'Digital Terrain Model (DTM)', defaultValue=None))
+        self.addParameter(QgsProcessingParameterVectorLayer('layer_with_il_index', 'Layer with IL index', types=[QgsProcessing.TypeVectorPolygon], defaultValue=None))
+        self.addParameter(QgsProcessingParameterField('il_index', 'IL index', type=QgsProcessingParameterField.Numeric, parentLayerParameterName='layer_with_il_index', allowMultiple=False, defaultValue=None))
+        self.addParameter(QgsProcessingParameterFeatureSink('LowLateralSpreadingZ0', 'Low lateral spreading (Z0)', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue='TEMPORARY_OUTPUT'))
+        self.addParameter(QgsProcessingParameterFeatureSink('RespectZonesRs', 'Respect zones (RS)', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue='TEMPORARY_OUTPUT'))
+        self.addParameter(QgsProcessingParameterFeatureSink('SusceptibilityZonesSz', 'Susceptibility Zones (SZ)', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue='TEMPORARY_OUTPUT'))
 
     def processAlgorithm(self, parameters, context, model_feedback):
         # Use a multi-step feedback, so that individual child algorithm progress reports are adjusted for the
         # overall progress through the model
-        feedback = QgsProcessingMultiStepFeedback(23, model_feedback)
+        feedback = QgsProcessingMultiStepFeedback(24, model_feedback)
         results = {}
         outputs = {}
 
-        # Punto sulla superficie
+        # Ritaglia raster con maschera
         alg_params = {
-            'ALL_PARTS': True,
-            'INPUT': parameters['polygon_layer'],
-            'OUTPUT': parameters['LiquefactionIndexPonit']
+            'ALPHA_BAND': False,
+            'CROP_TO_CUTLINE': True,
+            'DATA_TYPE': 0,  # Usa Il Tipo Dati del Layer in Ingresso
+            'EXTRA': '',
+            'INPUT': parameters['digital_terrain_model_dtm'],
+            'KEEP_RESOLUTION': False,
+            'MASK': parameters['layer_with_il_index'],
+            'MULTITHREADING': False,
+            'NODATA': None,
+            'OPTIONS': '',
+            'SET_RESOLUTION': False,
+            'SOURCE_CRS': 'ProjectCrs',
+            'TARGET_CRS': 'ProjectCrs',
+            'TARGET_EXTENT': parameters['layer_with_il_index'],
+            'X_RESOLUTION': None,
+            'Y_RESOLUTION': None,
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['PuntoSullaSuperficie'] = processing.run('native:pointonsurface', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['LiquefactionIndexPonit'] = outputs['PuntoSullaSuperficie']['OUTPUT']
+        outputs['RitagliaRasterConMaschera'] = processing.run('gdal:cliprasterbymasklayer', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(1)
         if feedback.isCanceled():
@@ -85,7 +89,7 @@ class SeismicMicrozonationAlgorithm(QgsProcessingAlgorithm):
             'BAND': 1,
             'COMPUTE_EDGES': False,
             'EXTRA': '',
-            'INPUT': parameters['digital_terrain_model'],
+            'INPUT': outputs['RitagliaRasterConMaschera']['OUTPUT'],
             'OPTIONS': '',
             'SCALE': 1,
             'ZEVENBERGEN': False,
@@ -97,376 +101,333 @@ class SeismicMicrozonationAlgorithm(QgsProcessingAlgorithm):
         if feedback.isCanceled():
             return {}
 
-        # Ritaglia raster con maschera
+        # Poligonizzazione (da raster a vettore)
         alg_params = {
-            'ALPHA_BAND': False,
-            'CROP_TO_CUTLINE': True,
-            'DATA_TYPE': 0,  # Usa Il Tipo Dati del Layer in Ingresso
+            'BAND': 1,
+            'EIGHT_CONNECTEDNESS': False,
             'EXTRA': '',
+            'FIELD': 'DN',
             'INPUT': outputs['Pendenza']['OUTPUT'],
-            'KEEP_RESOLUTION': True,
-            'MASK': parameters['polygon_layer'],
-            'MULTITHREADING': False,
-            'NODATA': None,
-            'OPTIONS': '',
-            'SET_RESOLUTION': False,
-            'SOURCE_CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'TARGET_CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'TARGET_EXTENT': None,
-            'X_RESOLUTION': None,
-            'Y_RESOLUTION': None,
-            'OUTPUT': parameters['Slope']
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['RitagliaRasterConMaschera'] = processing.run('gdal:cliprasterbymasklayer', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['Slope'] = outputs['RitagliaRasterConMaschera']['OUTPUT']
+        outputs['PoligonizzazioneDaRasterAVettore'] = processing.run('gdal:polygonize', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(3)
         if feedback.isCanceled():
             return {}
 
-        # Calcolatore raster
-        # slope%>15
+        # Intersezione_01
+        # prende gli attributi sia del raster che del vettore 
         alg_params = {
-            'CELL_SIZE': None,
-            'CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'EXPRESSION': '"A@1">15',
-            'EXTENT': None,
-            'LAYERS': outputs['RitagliaRasterConMaschera']['OUTPUT'],
+            'GRID_SIZE': None,
+            'INPUT': outputs['PoligonizzazioneDaRasterAVettore']['OUTPUT'],
+            'INPUT_FIELDS': [''],
+            'OVERLAY': parameters['layer_with_il_index'],
+            'OVERLAY_FIELDS': [''],
+            'OVERLAY_FIELDS_PREFIX': '',
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['CalcolatoreRaster'] = processing.run('native:modelerrastercalc', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Intersezione_01'] = processing.run('native:intersection', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(4)
         if feedback.isCanceled():
             return {}
 
-        # Calcolatore raster
-        # 5 < Slope% <= 15
+        # Rinomina campo Indice di liquefazione
+        # Rinominato il campo ha i volore del Indice di liquefazione per poter fare l'estrazione degli oggetti (poichè salvando il modello in python le funzionalità di qgis delle espressioni non funzionano quando si deve fare l'intersezione )
         alg_params = {
-            'CELL_SIZE': None,
-            'CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'EXPRESSION': '"A@1" > 5 AND "A@1" <= 15',
-            'EXTENT': None,
-            'LAYERS': outputs['RitagliaRasterConMaschera']['OUTPUT'],
+            'FIELD': parameters['il_index'],
+            'INPUT': outputs['Intersezione_01']['OUTPUT'],
+            'NEW_NAME': 'Index',
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['CalcolatoreRaster'] = processing.run('native:modelerrastercalc', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['RinominaCampoIndiceDiLiquefazione'] = processing.run('native:renametablefield', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(5)
         if feedback.isCanceled():
             return {}
 
-        # Calcolatore raster
-        # 2 < slope% <= 5 
+        # SZ (0< IL<=2) and (5< slope <=15)
         alg_params = {
-            'CELL_SIZE': None,
-            'CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'EXPRESSION': '"A@1" > 2 \nAND\n"A@1"<= 5 ',
-            'EXTENT': None,
-            'LAYERS': outputs['RitagliaRasterConMaschera']['OUTPUT'],
+            'EXPRESSION': '("INDEX" > 0 AND "INDEX"<=2) and ("DN" > 5 AND "DN" <=15)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['CalcolatoreRaster'] = processing.run('native:modelerrastercalc', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Sz0Il2And5Slope15'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(6)
         if feedback.isCanceled():
             return {}
 
-        # Poligonizzazione (da raster a vettore)
+        # SZ (2< IL<=5) and (2< slope<=5)
         alg_params = {
-            'BAND': 1,
-            'EIGHT_CONNECTEDNESS': False,
-            'EXTRA': '',
-            'FIELD': 'DN',
-            'INPUT': outputs['CalcolatoreRaster']['OUTPUT'],
+            'EXPRESSION': '("INDEX" > 2 AND "INDEX"<=5) AND ("DN" > 2 AND "DN" <=5)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['PoligonizzazioneDaRasterAVettore'] = processing.run('gdal:polygonize', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Sz2Il5And2Slope5'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(7)
         if feedback.isCanceled():
             return {}
 
-        # Poligonizzazione (da raster a vettore)
+        # RZ (0< IL<=2) and (slope >15)
         alg_params = {
-            'BAND': 1,
-            'EIGHT_CONNECTEDNESS': False,
-            'EXTRA': '',
-            'FIELD': 'DN',
-            'INPUT': outputs['CalcolatoreRaster']['OUTPUT'],
+            'EXPRESSION': '("INDEX" > 0 AND "INDEX"<=2) \r\nAND ("DN" >15)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['PoligonizzazioneDaRasterAVettore'] = processing.run('gdal:polygonize', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Rz0Il2AndSlope15'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(8)
         if feedback.isCanceled():
             return {}
 
-        # Poligonizzazione (da raster a vettore)
+        # SZ (5< IL< =15) AND (2< slope <=5)
         alg_params = {
-            'BAND': 1,
-            'EIGHT_CONNECTEDNESS': False,
-            'EXTRA': '',
-            'FIELD': 'DN',
-            'INPUT': outputs['CalcolatoreRaster']['OUTPUT'],
+            'EXPRESSION': '("INDEX"> 5 AND "INDEX"<= 15) AND (2< "DN" <=5)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['PoligonizzazioneDaRasterAVettore'] = processing.run('gdal:polygonize', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Sz5Il15And2Slope5'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(9)
         if feedback.isCanceled():
             return {}
 
-        # Estrai per attributo
-        # Estrazione dei soli oggetti del layer che avevano il requisito (1) , valore originario del pixel (DN=1)
+        # SZ0 (0<IL<=2) and (2< slope <=5)
         alg_params = {
-            'FIELD': 'DN',
-            'INPUT': outputs['PoligonizzazioneDaRasterAVettore']['OUTPUT'],
-            'OPERATOR': 0,  # =
-            'VALUE': '1',
+            'EXPRESSION': '("INDEX" > 0 AND "INDEX"<=2) and ("DN" > 2 AND "DN" <=5)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiPerAttributo'] = processing.run('native:extractbyattribute', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Sz00il2And2Slope5'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(10)
         if feedback.isCanceled():
             return {}
 
-        # Estrai per attributo
-        # Estrazione dei soli oggetti del layer che avevano il requisito (1) , valore originario del pixel (DN=1)
+        # zs_merge
         alg_params = {
-            'FIELD': 'DN',
-            'INPUT': outputs['PoligonizzazioneDaRasterAVettore']['OUTPUT'],
-            'OPERATOR': 0,  # =
-            'VALUE': '1',
+            'CRS': 'ProjectCrs',
+            'LAYERS': [outputs['Sz5Il15And2Slope5']['OUTPUT'],outputs['Sz2Il5And2Slope5']['OUTPUT'],outputs['Sz0Il2And5Slope15']['OUTPUT']],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiPerAttributo'] = processing.run('native:extractbyattribute', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Zs_merge'] = processing.run('native:mergevectorlayers', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(11)
         if feedback.isCanceled():
             return {}
 
-        # Estrai per attributo
-        # Estrazione dei soli oggetti del layer che avevano il requisito (1) , valore originario del pixel (DN=1)
+        # RZ ("IL" >15) AND ("slope" > 2)
+        # Estrazione tramite espressione 
+        # I campi 'DN' = slope% 
+        # 'Index'= Indice di liquefazione
         alg_params = {
-            'FIELD': 'DN',
-            'INPUT': outputs['PoligonizzazioneDaRasterAVettore']['OUTPUT'],
-            'OPERATOR': 0,  # =
-            'VALUE': '1',
+            'EXPRESSION': '("INDEX" >15) AND ("DN" > 2)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiPerAttributo'] = processing.run('native:extractbyattribute', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['RzIl15AndSlope2'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(12)
         if feedback.isCanceled():
             return {}
 
-        # Intersezione
-        # Intersezione Slope (vettoriale)  con il layer "Instab"
+        # zs_dissolvi
         alg_params = {
-            'GRID_SIZE': None,
-            'INPUT': parameters['polygon_layer'],
-            'INPUT_FIELDS': [''],
-            'OVERLAY': outputs['EstraiPerAttributo']['OUTPUT'],
-            'OVERLAY_FIELDS': [''],
-            'OVERLAY_FIELDS_PREFIX': '',
+            'FIELD': [''],
+            'INPUT': outputs['Zs_merge']['OUTPUT'],
+            'SEPARATE_DISJOINT': True,
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['Intersezione'] = processing.run('native:intersection', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Zs_dissolvi'] = processing.run('native:dissolve', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(13)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
+        # RZ (2< IL<=5) and (slope >5 )
         alg_params = {
-            'EXPRESSION': '"IL" >0 AND "IL"<=2',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['SusceptibilityLateralSpreadingZonesZsLs5Slope15And0Il2']
+            'EXPRESSION': '("INDEX">2 AND "INDEX"<=5) \r\nAND ("DN" > 5 )',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['SusceptibilityLateralSpreadingZonesZsLs5Slope15And0Il2'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['Rz2Il5AndSlope5'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(14)
         if feedback.isCanceled():
             return {}
 
-        # Intersezione
-        # Intersezione Slope (vettoriale)  con il layer "Instab"
+        # RZ (5< IL< =15) AND (Slope > 5)
         alg_params = {
-            'GRID_SIZE': None,
-            'INPUT': parameters['polygon_layer'],
-            'INPUT_FIELDS': [''],
-            'OVERLAY': outputs['EstraiPerAttributo']['OUTPUT'],
-            'OVERLAY_FIELDS': [''],
-            'OVERLAY_FIELDS_PREFIX': '',
+            'EXPRESSION': '("INDEX" >5 AND "INDEX" <= 15) AND ("DN" > 5)',
+            'INPUT': outputs['RinominaCampoIndiceDiLiquefazione']['OUTPUT'],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['Intersezione'] = processing.run('native:intersection', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Rz5Il15AndSlope5'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(15)
         if feedback.isCanceled():
             return {}
 
-        # Intersezione
-        # Intersezione Slope (vettoriale)  con il layer "Instab"
+        # zr_merge
         alg_params = {
-            'GRID_SIZE': None,
-            'INPUT': parameters['polygon_layer'],
-            'INPUT_FIELDS': [''],
-            'OVERLAY': outputs['EstraiPerAttributo']['OUTPUT'],
-            'OVERLAY_FIELDS': [''],
-            'OVERLAY_FIELDS_PREFIX': '',
+            'CRS': 'ProjectCrs',
+            'LAYERS': [outputs['RzIl15AndSlope2']['OUTPUT'],outputs['Rz2Il5AndSlope5']['OUTPUT'],outputs['Rz5Il15AndSlope5']['OUTPUT'],outputs['Rz0Il2AndSlope15']['OUTPUT']],
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['Intersezione'] = processing.run('native:intersection', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        outputs['Zr_merge'] = processing.run('native:mergevectorlayers', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(16)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
-        # Estrazione degli oggetti con 2 < Slope% ≤ 5; IL >15
+        # low_zo_dissolve
         alg_params = {
-            'EXPRESSION': '"IL" > 15',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['RespectZonesZrLs2Slope5AndIl15']
+            'FIELD': [''],
+            'INPUT': outputs['Sz00il2And2Slope5']['OUTPUT'],
+            'SEPARATE_DISJOINT': True,
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['RespectZonesZrLs2Slope5AndIl15'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['Low_zo_dissolve'] = processing.run('native:dissolve', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(17)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
+        # zr_dissolvi
         alg_params = {
-            'EXPRESSION': '"IL" > 0',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['RespectZonesZrLsSlope15AndIl0']
+            'FIELD': [''],
+            'INPUT': outputs['Zr_merge']['OUTPUT'],
+            'SEPARATE_DISJOINT': True,
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['RespectZonesZrLsSlope15AndIl0'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['Zr_dissolvi'] = processing.run('native:dissolve', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(18)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
+        # Riorganizza campi
         alg_params = {
-            'EXPRESSION': '"IL" > 2 AND "IL" <= 15',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['SusceptibilityZonesZsLs2Slope5And2Il15']
+            'FIELDS_MAPPING': [{'alias': '','comment': '','expression': 'zone','length': 255,'name': 'zone','precision': 0,'sub_type': 0,'type': 10,'type_name': 'text'}],
+            'INPUT': outputs['Low_zo_dissolve']['OUTPUT'],
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['SusceptibilityZonesZsLs2Slope5And2Il15'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['RiorganizzaCampi'] = processing.run('native:refactorfields', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(19)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
+        # zr_dissolve_riorganizza campi
         alg_params = {
-            'EXPRESSION': '"IL" > 0 AND "IL" <= 2',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['LowSusceptibilityZones']
+            'FIELDS_MAPPING': [{'alias': '','comment': '','expression': 'zone_code','length': 255,'name': 'zone','precision': 0,'sub_type': 0,'type': 10,'type_name': 'text'}],
+            'INPUT': outputs['Zr_dissolvi']['OUTPUT'],
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['LowSusceptibilityZones'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['Zr_dissolve_riorganizzaCampi'] = processing.run('native:refactorfields', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(20)
         if feedback.isCanceled():
             return {}
 
-        # Estrai tramite espressione
+        # zs_riorganizza campi
         alg_params = {
-            'EXPRESSION': '"IL" >2 AND "IL"<=15',
-            'INPUT': outputs['Intersezione']['OUTPUT'],
-            'OUTPUT': parameters['RespectZonesZrLs2Slope15And2Il5']
+            'FIELDS_MAPPING': [{'alias': '','comment': '','expression': 'code','length': 255,'name': 'code','precision': 0,'sub_type': 0,'type': 10,'type_name': 'text'}],
+            'INPUT': outputs['Zs_dissolvi']['OUTPUT'],
+            'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-        outputs['EstraiTramiteEspressione'] = processing.run('native:extractbyexpression', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['RespectZonesZrLs2Slope15And2Il5'] = outputs['EstraiTramiteEspressione']['OUTPUT']
+        outputs['Zs_riorganizzaCampi'] = processing.run('native:refactorfields', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
 
         feedback.setCurrentStep(21)
         if feedback.isCanceled():
             return {}
 
-        # Fondi vettori
+        # zr_calcolatore di campi
         alg_params = {
-            'CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'LAYERS': [outputs['EstraiTramiteEspressione']['OUTPUT'],outputs['EstraiTramiteEspressione']['OUTPUT'],outputs['EstraiTramiteEspressione']['OUTPUT']],
-            'OUTPUT': parameters['RespectZones']
+            'FIELD_LENGTH': 255,
+            'FIELD_NAME': 'zone_code',
+            'FIELD_PRECISION': 0,
+            'FIELD_TYPE': 2,  # Testo (stringa)
+            'FORMULA': "'respect zone - RZ'",
+            'INPUT': outputs['Zr_dissolve_riorganizzaCampi']['OUTPUT'],
+            'OUTPUT': parameters['RespectZonesRs']
         }
-        outputs['FondiVettori'] = processing.run('native:mergevectorlayers', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['RespectZones'] = outputs['FondiVettori']['OUTPUT']
+        outputs['Zr_calcolatoreDiCampi'] = processing.run('native:fieldcalculator', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        results['RespectZonesRs'] = outputs['Zr_calcolatoreDiCampi']['OUTPUT']
 
         feedback.setCurrentStep(22)
         if feedback.isCanceled():
             return {}
 
-        # Fondi vettori
+        # Z0 Calcolatore di campi
         alg_params = {
-            'CRS': QgsCoordinateReferenceSystem('EPSG:32633'),
-            'LAYERS': [outputs['EstraiTramiteEspressione']['OUTPUT'],outputs['EstraiTramiteEspressione']['OUTPUT']],
-            'OUTPUT': parameters['SusceptibilityZones']
+            'FIELD_LENGTH': 255,
+            'FIELD_NAME': 'zone',
+            'FIELD_PRECISION': 0,
+            'FIELD_TYPE': 2,  # Testo (stringa)
+            'FORMULA': "'Classe low Z0'",
+            'INPUT': outputs['RiorganizzaCampi']['OUTPUT'],
+            'OUTPUT': parameters['LowLateralSpreadingZ0']
         }
-        outputs['FondiVettori'] = processing.run('native:mergevectorlayers', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
-        results['SusceptibilityZones'] = outputs['FondiVettori']['OUTPUT']
+        outputs['Z0CalcolatoreDiCampi'] = processing.run('native:fieldcalculator', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        results['LowLateralSpreadingZ0'] = outputs['Z0CalcolatoreDiCampi']['OUTPUT']
+
+        feedback.setCurrentStep(23)
+        if feedback.isCanceled():
+            return {}
+
+        # zs_calcolatore di campi
+        alg_params = {
+            'FIELD_LENGTH': 255,
+            'FIELD_NAME': 'code',
+            'FIELD_PRECISION': 0,
+            'FIELD_TYPE': 2,  # Testo (stringa)
+            'FORMULA': "'susceptibility zone - SZ'",
+            'INPUT': outputs['Zs_riorganizzaCampi']['OUTPUT'],
+            'OUTPUT': parameters['SusceptibilityZonesSz']
+        }
+        outputs['Zs_calcolatoreDiCampi'] = processing.run('native:fieldcalculator', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        results['SusceptibilityZonesSz'] = outputs['Zs_calcolatoreDiCampi']['OUTPUT']
         return results
 
     def name(self):
-        return 'Lateral spreading for seismic microzonation'
+        return 'Lateral Spreading'
 
     def displayName(self):
-        return 'Lateral spreading for seismic microzonation'
+        return 'Lateral Spreading for SM'
 
     def group(self):
-        return 'Seismic Microzonation'
+        return 'Lateral Spreading for SM'
 
     def groupId(self):
-        return 'Seismic Microzonation'
+        return 'Lateral Spreading'
 
     def shortHelpString(self):
         return """<html><body><p><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-p, li { white-space: pre-wrap; }
 </style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:9.5pt; font-weight:400; font-style:normal;">
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600; color:#0000ab; background-color:transparent;">Lateral spreading</span><span style=" font-size:12pt; background-color:transparent;"> </span><span style=" background-color:transparent;">is a term used in geotechnical and earthquake engineering. It refers to the horizontal movement of soil or rock, often occurring during an earthquake. This phenomenon typically happens in areas with loose, saturated soils, and it can cause significant ground deformation, impacting structures, pipelines, and other infrastructure.</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" background-color:transparent;">Lateral spreading usually occurs when:</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" background-color:transparent;">- There is a liquefaction of loose, water-saturated soils.</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" background-color:transparent;">- The ground surface slopes gently.</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" background-color:transparent;">- There are nearby free faces, like riverbanks or sea cliffs, providing an unconfined direction for the soil to move.</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" background-color:transparent;">This type of ground failure is especially dangerous because it can lead to the collapse of buildings, bridges, and other critical infrastructure.</span></p></body></html></p>
-<h2>Parametri in ingresso
-</h2>
-<h3>Polygon Layer</h3>
-<p>Layer</p>
-<h3>Liquefaction Index (IL)</h3>
-<p>IL</p>
-<h3>Digital Terrain Model</h3>
-<p>DTM</p>
-<h2>Risultati</h2>
-<h3>Slope %</h3>
-<p>Slope %</p>
-<h3>Low Susceptibility Zones</h3>
-<p>Z0LS</p>
-<h3>Respect Zones</h3>
-<p>ZRLS </p>
-<h3>Susceptibility Zones</h3>
-<p>ZSLS </p>
-<h2>Esempi</h2>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600;">Lateral spreading for seismic microzonation</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; color:#000000;">The tool calculates zones subject to lateral spreading:</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; color:#33a02c;">A) Low Susceptibility Zones (Z0): </span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">2 &lt; Slope% ≤ 5 and 0 &lt; IL ≤ 2</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; color:#ff7f00;">B) Susceptibility Zones (SZ)</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">0&lt; IL ≤ 2 and 5 &lt; Slope% ≤ 15</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">2&lt; IL ≤ 5 and 2 &lt; Slope% &gt; 5</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">5 &lt; IL ≤ 15 and 2 &lt; Slope% ≤ 5</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; color:#fc3300;">C) Respect Zones (RZ)</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">0&lt; IL ≤ 2 and Slope% &gt; 15</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">2&lt; IL ≤ 5 and Slope% &gt; 5</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">5&lt; IL ≤ 15 and Slope% &gt; 5</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#000000;">IL &gt;15 and Slope% &gt; 2</span></p>
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#000000;"><br /></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" color:#666666;">*IL = liquefaction index</span></p></body></html></p>
 <p><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-p, li { white-space: pre-wrap; }
 </style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:9.5pt; font-weight:400; font-style:normal;">
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; color:#0000d8;">The plugin identifies Zones subject to lateral spreading:</span></p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Low Susceptibility Zones (Z0): 2 &lt; Slope% ≤ 5 and 0 &lt; IL ≤ 2;</p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Susceptibility Zones (ZS): 2 &lt; Slope% ≤ 5 and 2&lt; IL ≤ 15;</p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Susceptibility Zones (ZS): 5 &lt; Slope% ≤ 15 and 0 &lt; IL ≤ 2;</p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Respect Zones (ZR): 2 &lt; Slope% ≤ 5 and IL &gt;15;</p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Respect Zones (ZR): 2 &lt; Slope% ≤ 15 and 2 &lt; IL≤ 5;</p>
-<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">- Respect Zone(ZR): Slope (%) &gt; 15% and IL &gt; 0.</p></body></html></p><br><p align="right">Autore algoritmo: Giuseppe Cosentino e Francesco Pennica</p><p align="right">Versione algoritmo: Version 1.0. 20241202</p></body></html>"""
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p></body></html></p><br><p align="right">Autore algoritmo: Giuseppe Cosentino (Pino)</p><p align="right">Versione algoritmo: 0.1 20250122</p></body></html>"""
 
     def createInstance(self):
         return SeismicMicrozonationAlgorithm()
