@@ -1,4 +1,5 @@
 # Lateral-spreading-for-SM
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14719324.svg)](https://doi.org/10.5281/zenodo.14719324)
 Lateral spreading is a term used in geotechnical and earthquake engineering. It refers to the horizontal movement of soil or rock, often occurring during an earthquake. This phenomenon typically happens in areas with loose, saturated soils, and it can cause significant ground deformation, impacting structures, pipelines, and other infrastructure.
 Lateral spreading usually occurs when:
 - There is a liquefaction of loose, water-saturated soils.
