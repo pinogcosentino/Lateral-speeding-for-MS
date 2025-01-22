@@ -9,11 +9,17 @@ This type of ground failure is especially dangerous because it can lead to the c
 Input parameters: Polygon Layer; Liquefaction Index (IL); Digital Terrain Model.
 Output:Slope %; Low Susceptibility Zones; Respect Zones; Susceptibility Zones.
 
-Examples:
-The plugin identifies Zones subject to lateral spreading:
-- Low Susceptibility Zones (Z0): 2 < Slope% ≤ 5 and 0 < IL ≤ 2;
-- Susceptibility Zones (ZS): 2 < Slope% ≤ 5 and 2< IL ≤ 15;
-- Susceptibility Zones (ZS): 5 < Slope% ≤ 15 and 0 < IL ≤ 2;
-- Respect Zones (ZR): 2 < Slope% ≤ 5 and IL >15;
-- Respect Zones (ZR): 2 < Slope% ≤ 15 and 2 < IL≤ 5;
-- Respect Zone(ZR): Slope (%) > 15% and IL > 0.
+The tool calculates zones subject to lateral spreading:
+A) Low Susceptibility Zones (Z0): 
+2 < Slope% ≤ 5 and 0 < IL ≤ 2
+B) Susceptibility Zones (SZ)
+0< IL ≤ 2 and 5 < Slope% ≤ 15
+2< IL ≤ 5 and 2 < Slope% > 5
+5 < IL ≤ 15 and 2 < Slope% ≤ 5
+C) Respect Zones (RZ)
+0< IL ≤ 2 and Slope% > 15
+2< IL ≤ 5 and Slope% > 5
+5< IL ≤ 15 and Slope% > 5
+IL >15 and Slope% > 2
+
+*IL = liquefaction index
