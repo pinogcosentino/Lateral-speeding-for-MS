@@ -11,7 +11,7 @@ Output:Slope %; Low Susceptibility Zones; Respect Zones; Susceptibility Zones.
 
 The tool calculates zones subject to lateral spreading:
 A) Low Susceptibility Zones (Z0): 
-2 < Slope% ≤ 5 and 0 < IL ≤ 2
+- 2 < Slope% ≤ 5 and 0 < IL ≤ 2
 B) Susceptibility Zones (SZ)
 0< IL ≤ 2 and 5 < Slope% ≤ 15
 2< IL ≤ 5 and 2 < Slope% > 5
