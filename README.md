@@ -13,13 +13,13 @@ The tool calculates zones subject to lateral spreading:
 A) Low Susceptibility Zones (Z0): 
 - 2 < Slope% ≤ 5 and 0 < IL ≤ 2
 B) Susceptibility Zones (SZ)
-0< IL ≤ 2 and 5 < Slope% ≤ 15
-2< IL ≤ 5 and 2 < Slope% > 5
-5 < IL ≤ 15 and 2 < Slope% ≤ 5
+- 0< IL ≤ 2 and 5 < Slope% ≤ 15
+- 2< IL ≤ 5 and 2 < Slope% > 5
+- 5 < IL ≤ 15 and 2 < Slope% ≤ 5
 C) Respect Zones (RZ)
-0< IL ≤ 2 and Slope% > 15
-2< IL ≤ 5 and Slope% > 5
-5< IL ≤ 15 and Slope% > 5
-IL >15 and Slope% > 2
+- 0< IL ≤ 2 and Slope% > 15
+- 2< IL ≤ 5 and Slope% > 5
+- 5< IL ≤ 15 and Slope% > 5
+- IL >15 and Slope% > 2
 
 *IL = liquefaction index
