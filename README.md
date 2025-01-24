@@ -25,3 +25,6 @@ The tool calculates zones subject to lateral spreading:
 - IL >15 and Slope% > 2
 
 *IL = liquefaction index
+
+![figura](https://github.com/user-attachments/assets/031c0fb5-5557-4bfa-8c2c-7a3c6c9ca30a)
+
