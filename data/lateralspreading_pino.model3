@@ -206,7 +206,43 @@
       <Option type="double" name="component_width" value="200"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="gdal:slope_1"/>
-      <Option name="outputs"/>
+      <Option type="Map" name="outputs">
+        <Option type="Map" name="slope%">
+          <Option type="QString" name="child_id" value="gdal:slope_1"/>
+          <Option type="QString" name="color" value=""/>
+          <Option type="Map" name="comment">
+            <Option type="QString" name="color" value=""/>
+            <Option type="QString" name="component_description" value=""/>
+            <Option type="double" name="component_height" value="60"/>
+            <Option type="double" name="component_pos_x" value="0"/>
+            <Option type="double" name="component_pos_y" value="0"/>
+            <Option type="double" name="component_width" value="100"/>
+            <Option type="bool" name="outputs_collapsed" value="true"/>
+            <Option type="bool" name="parameters_collapsed" value="true"/>
+          </Option>
+          <Option type="QString" name="component_description" value="slope%"/>
+          <Option type="double" name="component_height" value="30"/>
+          <Option type="double" name="component_pos_x" value="2350"/>
+          <Option type="double" name="component_pos_y" value="585"/>
+          <Option type="double" name="component_width" value="200"/>
+          <Option type="Map" name="default_value">
+            <Option type="QString" name="class" value="QgsProcessingOutputLayerDefinition"/>
+            <Option type="Map" name="create_options">
+              <Option type="QString" name="fileEncoding" value="windows-1252"/>
+            </Option>
+            <Option type="Map" name="sink">
+              <Option type="bool" name="active" value="true"/>
+              <Option type="int" name="type" value="1"/>
+              <Option type="QString" name="val" value=""/>
+            </Option>
+          </Option>
+          <Option type="bool" name="mandatory" value="true"/>
+          <Option type="QString" name="name" value="slope%"/>
+          <Option type="QString" name="output_name" value="OUTPUT"/>
+          <Option type="bool" name="outputs_collapsed" value="true"/>
+          <Option type="bool" name="parameters_collapsed" value="true"/>
+        </Option>
+      </Option>
       <Option type="bool" name="outputs_collapsed" value="true"/>
       <Option type="bool" name="parameters_collapsed" value="true"/>
       <Option type="Map" name="params">
@@ -415,7 +451,7 @@
       <Option type="QString" name="color" value=""/>
       <Option type="Map" name="comment">
         <Option type="QString" name="color" value="255,127,0,255"/>
-        <Option type="QString" name="component_description" value="Estrazione tramite espressione &#xa;I campi 'DN' = slope% &#xa;'Index'= Indice di liquefazione"/>
+        <Option type="QString" name="component_description" value=""/>
         <Option type="double" name="component_height" value="50"/>
         <Option type="double" name="component_pos_x" value="2975"/>
         <Option type="double" name="component_pos_y" value="925"/>
@@ -425,8 +461,8 @@
       </Option>
       <Option type="QString" name="component_description" value="RZ (&quot;IL&quot; >15) AND (&quot;slope&quot; > 2)"/>
       <Option type="double" name="component_height" value="50"/>
-      <Option type="double" name="component_pos_x" value="2595"/>
-      <Option type="double" name="component_pos_y" value="1135"/>
+      <Option type="double" name="component_pos_x" value="2505"/>
+      <Option type="double" name="component_pos_y" value="1405"/>
       <Option type="double" name="component_width" value="270"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_1"/>
@@ -466,8 +502,8 @@
       </Option>
       <Option type="QString" name="component_description" value="RZ (2&lt; IL&lt;=5) and (slope >5 )"/>
       <Option type="double" name="component_height" value="50"/>
-      <Option type="double" name="component_pos_x" value="2655"/>
-      <Option type="double" name="component_pos_y" value="1345"/>
+      <Option type="double" name="component_pos_x" value="2475"/>
+      <Option type="double" name="component_pos_y" value="1195"/>
       <Option type="double" name="component_width" value="330"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_2"/>
@@ -507,8 +543,8 @@
       </Option>
       <Option type="QString" name="component_description" value="RZ (5&lt; IL&lt; =15) AND (Slope > 5)"/>
       <Option type="double" name="component_height" value="50"/>
-      <Option type="double" name="component_pos_x" value="2590"/>
-      <Option type="double" name="component_pos_y" value="1255"/>
+      <Option type="double" name="component_pos_x" value="2410"/>
+      <Option type="double" name="component_pos_y" value="1285"/>
       <Option type="double" name="component_width" value="200"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_3"/>
@@ -519,7 +555,7 @@
         <Option type="List" name="EXPRESSION">
           <Option type="Map">
             <Option type="int" name="source" value="2"/>
-            <Option type="QString" name="static_value" value="(&quot;INDEX&quot; >5 AND &quot;INDEX&quot; &lt;= 15) AND (&quot;DN&quot; > 5)"/>
+            <Option type="QString" name="static_value" value="(&quot;INDEX&quot; >5 AND &quot;INDEX&quot; &lt;= 15) AND (&quot;DN&quot; > 5)&#xd;&#xa;"/>
           </Option>
         </Option>
         <Option type="List" name="INPUT">
@@ -546,10 +582,10 @@
         <Option type="bool" name="outputs_collapsed" value="true"/>
         <Option type="bool" name="parameters_collapsed" value="true"/>
       </Option>
-      <Option type="QString" name="component_description" value="SZ (5&lt; IL&lt; =15) AND (2&lt; slope &lt;=5)"/>
+      <Option type="QString" name="component_description" value="SZ (5&lt; IL&lt;=15) AND (2&lt; slope &lt;=5)"/>
       <Option type="double" name="component_height" value="50"/>
-      <Option type="double" name="component_pos_x" value="2640"/>
-      <Option type="double" name="component_pos_y" value="1585"/>
+      <Option type="double" name="component_pos_x" value="2520"/>
+      <Option type="double" name="component_pos_y" value="1795"/>
       <Option type="double" name="component_width" value="300"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_4"/>
@@ -560,7 +596,7 @@
         <Option type="List" name="EXPRESSION">
           <Option type="Map">
             <Option type="int" name="source" value="2"/>
-            <Option type="QString" name="static_value" value="(&quot;INDEX&quot;> 5 AND &quot;INDEX&quot;&lt;= 15) AND (2&lt; &quot;DN&quot; &lt;=5)"/>
+            <Option type="QString" name="static_value" value="(&quot;INDEX&quot;> 5 AND &quot;INDEX&quot;&lt;= 15) AND &#xd;&#xa;(&quot;DN&quot;>2 AND DN &lt;=5)"/>
           </Option>
         </Option>
         <Option type="List" name="INPUT">
@@ -589,8 +625,8 @@
       </Option>
       <Option type="QString" name="component_description" value="SZ (2&lt; IL&lt;=5) and (2&lt; slope&lt;=5)"/>
       <Option type="double" name="component_height" value="50"/>
-      <Option type="double" name="component_pos_x" value="2610"/>
-      <Option type="double" name="component_pos_y" value="1705"/>
+      <Option type="double" name="component_pos_x" value="2520"/>
+      <Option type="double" name="component_pos_y" value="1675"/>
       <Option type="double" name="component_width" value="300"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_5"/>
@@ -671,8 +707,8 @@
       </Option>
       <Option type="QString" name="component_description" value="SZ (0&lt; IL&lt;=2) and (5&lt; slope &lt;=15)"/>
       <Option type="double" name="component_height" value="61.87973816818977"/>
-      <Option type="double" name="component_pos_x" value="2595"/>
-      <Option type="double" name="component_pos_y" value="1830.9398690840949"/>
+      <Option type="double" name="component_pos_x" value="2535"/>
+      <Option type="double" name="component_pos_y" value="1530.9398690840949"/>
       <Option type="double" name="component_width" value="270"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_7"/>
@@ -712,8 +748,8 @@
       </Option>
       <Option type="QString" name="component_description" value="RZ (0&lt; IL&lt;=2) and (slope >15)"/>
       <Option type="double" name="component_height" value="61.87973816818977"/>
-      <Option type="double" name="component_pos_x" value="2625"/>
-      <Option type="double" name="component_pos_y" value="1440.9398690840949"/>
+      <Option type="double" name="component_pos_x" value="2595"/>
+      <Option type="double" name="component_pos_y" value="1050.9398690840949"/>
       <Option type="double" name="component_width" value="270"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:extractbyexpression_8"/>
@@ -908,7 +944,7 @@
         <Option type="List" name="FIELD_NAME">
           <Option type="Map">
             <Option type="int" name="source" value="2"/>
-            <Option type="QString" name="static_value" value="zone_code"/>
+            <Option type="QString" name="static_value" value="code"/>
           </Option>
         </Option>
         <Option type="List" name="FIELD_PRECISION">
@@ -1126,7 +1162,7 @@
       <Option type="QString" name="component_description" value="zr_merge"/>
       <Option type="double" name="component_height" value="30"/>
       <Option type="double" name="component_pos_x" value="3010"/>
-      <Option type="double" name="component_pos_y" value="1335"/>
+      <Option type="double" name="component_pos_y" value="1455"/>
       <Option type="double" name="component_width" value="200"/>
       <Option name="dependencies"/>
       <Option type="QString" name="id" value="native:mergevectorlayers_1"/>
@@ -1248,9 +1284,9 @@
               <Option type="Map">
                 <Option type="QString" name="alias" value=""/>
                 <Option type="QString" name="comment" value=""/>
-                <Option type="QString" name="expression" value="zone"/>
+                <Option type="QString" name="expression" value=""/>
                 <Option type="int" name="length" value="255"/>
-                <Option type="QString" name="name" value="zone"/>
+                <Option type="QString" name="name" value="code"/>
                 <Option type="int" name="precision" value="0"/>
                 <Option type="int" name="sub_type" value="0"/>
                 <Option type="int" name="type" value="10"/>
@@ -1301,9 +1337,9 @@
               <Option type="Map">
                 <Option type="QString" name="alias" value=""/>
                 <Option type="QString" name="comment" value=""/>
-                <Option type="QString" name="expression" value="zone_code"/>
+                <Option type="QString" name="expression" value=""/>
                 <Option type="int" name="length" value="255"/>
-                <Option type="QString" name="name" value="zone"/>
+                <Option type="QString" name="name" value="code"/>
                 <Option type="int" name="precision" value="0"/>
                 <Option type="int" name="sub_type" value="0"/>
                 <Option type="int" name="type" value="10"/>
@@ -1354,7 +1390,7 @@
               <Option type="Map">
                 <Option type="QString" name="alias" value=""/>
                 <Option type="QString" name="comment" value=""/>
-                <Option type="QString" name="expression" value="code"/>
+                <Option type="QString" name="expression" value=""/>
                 <Option type="int" name="length" value="255"/>
                 <Option type="QString" name="name" value="code"/>
                 <Option type="int" name="precision" value="0"/>
@@ -1423,10 +1459,9 @@
     </Option>
   </Option>
   <Option type="Map" name="designerParameterValues">
-    <Option type="QString" name="dtm" value="CLIP_DEM_umbria_tinItaly_10m_cb395b68_12b9_4d1b_a115_7115d6cd8d9b"/>
-    <Option type="QString" name="il" value="IL"/>
-    <Option type="QString" name="poligoni" value="poligoni_7b762db6_4ba8_434a_9b71_a99546953c60"/>
-    <Option type="QgsProcessingOutputLayerDefinition" name="respect_zones">
+    <Option type="QString" name="digital_terrain_model_dtm" value="CLIP_DEM_umbria_tinItaly_10m_cb395b68_12b9_4d1b_a115_7115d6cd8d9b"/>
+    <Option type="QString" name="il_index" value="IL"/>
+    <Option type="QgsProcessingOutputLayerDefinition" name="index_15_and_dn__2">
       <Option type="Map">
         <Option type="Map" name="create_options">
           <Option type="QString" name="fileEncoding" value="windows-1252"/>
@@ -1438,7 +1473,8 @@
         </Option>
       </Option>
     </Option>
-    <Option type="QgsProcessingOutputLayerDefinition" name="susceptibility_zones">
+    <Option type="QString" name="layer_with_il_index" value="Nuovo_layer_temporaneo_9908f1b3_dd9c_4b3a_a82e_76de20c92292"/>
+    <Option type="QgsProcessingOutputLayerDefinition" name="low_lateral_spreading_z0">
       <Option type="Map">
         <Option type="Map" name="create_options">
           <Option type="QString" name="fileEncoding" value="windows-1252"/>
@@ -1450,7 +1486,79 @@
         </Option>
       </Option>
     </Option>
-    <Option type="QgsProcessingOutputLayerDefinition" name="z0">
+    <Option type="QgsProcessingOutputLayerDefinition" name="rz_0_il2_and_slope_15">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="rz_2_il5_and_slope_5_">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="rz_5_il_15_and_slope__5">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="slope">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="sz_0_il2_and_5_slope_15">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="sz_2_il5_and_2_slope5">
+      <Option type="Map">
+        <Option type="Map" name="create_options">
+          <Option type="QString" name="fileEncoding" value="windows-1252"/>
+        </Option>
+        <Option type="Map" name="sink">
+          <Option type="bool" name="active" value="true"/>
+          <Option type="int" name="type" value="1"/>
+          <Option type="QString" name="val" value="TEMPORARY_OUTPUT"/>
+        </Option>
+      </Option>
+    </Option>
+    <Option type="QgsProcessingOutputLayerDefinition" name="sz_5_il15_and_2_slope_5">
       <Option type="Map">
         <Option type="Map" name="create_options">
           <Option type="QString" name="fileEncoding" value="windows-1252"/>
@@ -1585,6 +1693,33 @@
       <Option type="QString" name="parameter_type" value="sink"/>
       <Option type="bool" name="supports_append" value="true"/>
       <Option type="bool" name="supports_non_file_outputs" value="true"/>
+    </Option>
+    <Option type="Map" name="slope">
+      <Option type="bool" name="create_by_default" value="true"/>
+      <Option type="QgsProcessingOutputLayerDefinition" name="default">
+        <Option type="Map">
+          <Option type="Map" name="create_options">
+            <Option type="QString" name="fileEncoding" value="windows-1252"/>
+          </Option>
+          <Option type="Map" name="sink">
+            <Option type="bool" name="active" value="true"/>
+            <Option type="int" name="type" value="1"/>
+            <Option type="QString" name="val" value=""/>
+          </Option>
+        </Option>
+      </Option>
+      <Option type="invalid" name="defaultGui"/>
+      <Option type="QString" name="description" value="slope%"/>
+      <Option type="int" name="flags" value="0"/>
+      <Option type="QString" name="help" value=""/>
+      <Option type="Map" name="metadata">
+        <Option type="QString" name="_modelChildId" value="gdal:slope_1"/>
+        <Option type="QString" name="_modelChildOutputName" value="slope%"/>
+        <Option type="QString" name="_modelChildProvider" value="gdal"/>
+      </Option>
+      <Option type="QString" name="name" value="slope"/>
+      <Option type="QString" name="parameter_type" value="rasterDestination"/>
+      <Option type="bool" name="supports_non_file_outputs" value="false"/>
     </Option>
     <Option type="Map" name="susceptibility_zones_sz">
       <Option type="bool" name="create_by_default" value="true"/>
