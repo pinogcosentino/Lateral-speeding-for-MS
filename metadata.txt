@@ -2,7 +2,7 @@
 name=Lateral spreading
 qgisMinimumVersion=3.34
 description=Lateral spreading for seismic microzonation
-version=0.1
+version=0.2
 author=Giuseppe Cosentino (Pino)
 email=giuseppe.cosentino@cnr.it
 
@@ -17,11 +17,16 @@ repository=https://github.com/pinogcosentino/Lateral-spreading-for-seismic-micro
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
 # changelog=
+<b>v0.2:</b>
+	- Slope% layer 
+    - Fixed solved calculation SZ (2< IL<=5) and (2< slope<=5)
+    - Fixed some minor issues 
+
 
 # Tags are comma separated with spaces allowed
 tags=geology, seismic microzonation,  geoprocessing
 
-homepage=http://homepage
+homepage=https://github.com/pinogcosentino/Lateral-spreading-for-seismic-microzonation/tree/main
 category=Geoprocessing
 icon=icon.png
 # experimental flag
