@@ -11,6 +11,19 @@ This type of ground failure is especially dangerous because it can lead to the c
 Input parameters: Polygon Layer; Liquefaction Index (IL); Digital Terrain Model.
 Output:Slope %; Low Susceptibility Zones; Respect Zones; Susceptibility Zones.
 
+## Changelog
+
+### 0.3
+- Merged Layers: SZ0, RZ and SZ
+- Numeric coding and the description of the formula in the layer table
+- Style layer
+- Fixed some minor issues
+
+### 0.2
+- Slope layer 
+- Fixed solved calculation SZ
+- Fixed some minor issues 
+
 The tool calculates zones subject to lateral spreading:
 # A) Low Susceptibility Zones (Z0): 
 - 2 < Slope% ≤ 5 and 0 < IL ≤ 2
