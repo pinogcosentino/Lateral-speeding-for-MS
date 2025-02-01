@@ -13,13 +13,13 @@ Output:Slope %; Low Susceptibility Zones; Respect Zones; Susceptibility Zones.
 
 ## Changelog
 
-### 0.3
+### Version 0.3
 - Merged Layers: SZ0, RZ and SZ
 - Numeric coding and the description of the formula in the layer table
 - Style layer
 - Fixed some minor issues
 
-### 0.2
+### Version 0.2
 - Slope layer 
 - Fixed solved calculation SZ
 - Fixed some minor issues 
